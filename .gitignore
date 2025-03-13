@@ -1,0 +1,3 @@
+# Ignore profile pictures and media files
+mysite/pictures/profile_pictures/
+mysite/media/

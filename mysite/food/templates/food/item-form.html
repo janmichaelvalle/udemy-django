@@ -1,0 +1,19 @@
+{% extends 'food/base.html' %}
+{% block body %}
+
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form }}
+  <!-- 
+  When Django processes {% csrf_token %} and {{ form }}, it renders HTML form fields based on ItemForm. 
+  
+  - Automatically generates input fields for each model field
+  - Handles form validation (e.g., required fields, max length)
+  
+  -->
+  <button type="submit">Save</button>
+</form>
+
+
+{% endblock %}

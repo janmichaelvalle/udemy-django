@@ -1,0 +1,1 @@
+# The purpose of this file is to tell the mysite directory should be considered as a python package.
