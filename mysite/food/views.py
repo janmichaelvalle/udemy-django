@@ -5,6 +5,7 @@ from django.template import loader
 from .forms import ItemForm
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 
 # Create your views here.
 def index(request):
@@ -49,6 +50,38 @@ def create_item(request):
       return redirect('food:index') #Redirect back to the item list page
    
    return render(request, 'food/item-form.html', {'form':form})
+
+# this is a class based view for create item
+"""
+CreateView is a Django generic class-based view that:
+	•	Displays a form based on the Item model.
+	•	Handles form submission and validates user input.
+	•	Saves the new object to the database automatically.
+"""
+class CreateItem(CreateView):
+   model = Item # Defines which model to use (Item model)
+   fields = ['item_name', 'item_desc', 'item_price', 'item_image'] # Specifies which fields to include in the form
+   template_name = 'food/item-form.html'  # The HTML template for the form
+
+   def form_valid(self, form):
+      form.instance.user_name = self.request.user  # Assigns the logged-in user as the creator
+      return super().form_valid(form) # Calls the default form_valid() method and saves the form. super().method_name(arguments) calls a method from the parent class.
+
+   """
+   •	CreateView (Parent Class) already has a form_valid() method.
+	•	CreateItem (Child Class) overrides form_valid() to add custom logic.
+	•	Calling super().form_valid(form) ensures that Django still handles saving & redirection. form_valid() is already inside CreateView, but we override it inside CreateItem
+
+
+   Django provides the form_valid() method, which runs after the user submits the form
+      1. form.instance.user_name = self.request.user
+         - What it does: Sets the user_name field of the Item to the currently logged-in user.
+         - Why? Since user_name is a foreign key (linked to the User model), we need to set the currently logged-in user as the owner of the new item.
+      2. return super().form_valid(form)
+         - What it does: Calls the default form_valid() method from CreateView.
+         - Why? It saves the form data to the database and redirects the user to the correct page.
+
+   """
 
 
 def update_item(request, id):
