@@ -1,15 +1,32 @@
-{% load static %}
+{% extends 'myapp/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'myapp/styles.css' %}">
-  <title>Document</title>
-</head>
-<body>
-  <h1>This is a template</h1>
-  
-</body>
-</html>
+{% block body %}
+  <h1>This is the index page</h1>
+  <form method="POST">
+    {% csrf_token %}
+    <div class="">
+      <div>
+        <label>Expense Name</label>
+        <div> {{ expense_form.name }}</div>
+      </div>
+      <div>
+        <label>Amount</label>
+        <div> {{ expense_form.amount }}</div>
+      </div>
+      <div>
+        <label>Category</label>
+        <div> {{ expense_form.category }}</div>
+      </div>
+      <div>
+        <button>Add</button>
+      </div>
+
+    </div>
+
+  </form>
+  <div>Expenses</div>
+  {% for expense in expenses %}
+    {{ expense }}
+  {% endfor %}
+
+{% endblock %}
