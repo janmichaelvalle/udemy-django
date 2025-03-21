@@ -1,32 +1,117 @@
 {% extends 'myapp/base.html' %}
+{% load humanize %}
 
 {% block body %}
   <h1>This is the index page</h1>
+  
+  <!-- Form to add a new expense -->
   <form method="POST">
     {% csrf_token %}
-    <div class="">
+    <div>
       <div>
         <label>Expense Name</label>
-        <div> {{ expense_form.name }}</div>
+        <div> {{ expense_form.name }}</div> <!-- Name field -->
       </div>
       <div>
         <label>Amount</label>
-        <div> {{ expense_form.amount }}</div>
+        <div> {{ expense_form.amount }}</div> <!-- Amount field -->
       </div>
       <div>
         <label>Category</label>
-        <div> {{ expense_form.category }}</div>
+        <div> {{ expense_form.category }}</div> <!-- Category field -->
       </div>
       <div>
-        <button>Add</button>
+        <button>Add</button> <!-- Submit button -->
       </div>
-
     </div>
-
   </form>
-  <div>Expenses</div>
-  {% for expense in expenses %}
-    {{ expense }}
-  {% endfor %}
 
+  <div>Expenses</div>
+  
+  <!-- Expense List Table -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Date</th>
+        <th scope="col">Category</th>
+        <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for expense in expenses %}
+      <tr>
+        <td>  {{ expense.name }}</td>
+        <td> {{ expense.amount | intcomma }} </td>
+        <td> {{ expense.date }} </td>
+        <td> {{ expense.category }} </td>
+        
+        <!-- Link to edit the specific expense -->
+        <td>
+          <button> 
+          <a class="link-dark link-underline link-underline-opacity-0" href="{% url 'edit' expense.id %}">Edit</a></td>
+        </button>
+          <!-- The {% url 'edit' expense.id %} tag will generate a URL like: /edit/3/
+           - edit' → Refers to the name of the URL pattern (from urls.py).
+           - expense.id → The parameter passed to the URL (expense’s unique ID). 
+         -->
+        
+        <td>
+          <form method="POST" action="{% url 'delete' expense.id %}">
+            {% csrf_token %}
+            <button type="submit" name="delete">Delete</button>
+          </form>
+          
+      </tr>
+      
+      {% endfor %}
+      <tr>
+        <td>  Total </td>
+        <td> {{ total_expenses.amount__sum | intcomma }} </td>
+
+      </tr>
+    </tbody>
+  </table>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Last 365 Days</h5>
+      <p class="card-text"> {{ total_yearly_expenses.amount__sum | intcomma }}</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Last 30 Days</h5>
+      <p class="card-text"> {{ total_monthly_expenses.amount__sum | intcomma }}</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Last 7 Days</h5>
+      <p class="card-text"> {{ total_weekly_expenses.amount__sum | intcomma }}</p>
+    </div>
+  </div>
+
+<h1>Daily Sums</h1>
+   <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Total Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for daily_sum in daily_sums %}
+      <tr>
+        <td>  {{ daily_sum.date }}</td>
+        <td> {{ daily_sum.sum | intcomma }} </td>
+
+    
+      
+      {% endfor %}
+      
+    </tbody>
+  </table>
+  
 {% endblock %}
